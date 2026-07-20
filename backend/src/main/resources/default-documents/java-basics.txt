@@ -1,0 +1,131 @@
+# Java Basics
+
+## 1. Introduction to Java
+Java is a high-level, class-based, object-oriented programming language that is designed to have as few implementation dependencies as possible. It is a general-purpose programming language intended to let programmers write once, run anywhere (WORA).
+
+## 2. Features of Java
+- Object-Oriented: In Java, everything is an object.
+- Platform Independent: Unlike many other programming languages including C and C++, when Java is compiled, it is not compiled into platform-specific machine, rather into platform-independent byte code.
+- Simple: Java is designed to be easy to learn. If you understand the basic concept of OOP, Java would be easy to master.
+- Secure: With Java's secure feature, it enables the development of virus-free, tamper-free systems.
+- Architecture-neutral, Portable, Robust, Multithreaded, High Performance, Distributed, and Dynamic.
+
+## 3. JDK, JRE, and JVM
+- JDK (Java Development Kit): Contains JRE and development tools (compiler, debugger).
+- JRE (Java Runtime Environment): Contains JVM and library classes.
+- JVM (Java Virtual Machine): An abstract machine that executes Java bytecode.
+
+## 4. Java Program Structure
+```java
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}
+```
+
+## 5. Variables and Constants
+Variables are containers for storing data values. In Java, there are different types of variables: String, int, float, char, boolean.
+Constants are defined using the `final` keyword. `final int MAX = 100;`
+
+## 6. Primitive and Non-Primitive Data Types
+- Primitive: `byte`, `short`, `int`, `long`, `float`, `double`, `boolean`, `char`.
+- Non-Primitive: Strings, Arrays, Classes, Interfaces.
+
+## 7. Type Conversion and Casting
+- Widening Casting (automatically) - converting a smaller type to a larger type size.
+- Narrowing Casting (manually) - converting a larger type to a smaller size type.
+
+## 8. Operators
+Java supports Arithmetic (+, -, *, /, %), Relational (==, !=, >, <, >=, <=), Logical (&&, ||, !), Bitwise, Assignment, and Ternary operators.
+
+## 9. Input and Output
+Output: `System.out.println()`, `System.out.print()`
+Input: Using the `Scanner` class (`java.util.Scanner`).
+
+## 10. Conditional Statements
+`if`, `else if`, `else`, `switch` statements control the flow of execution based on conditions.
+
+## 11. Loops
+`for`, `while`, `do-while` loops allow execution of a block of code repeatedly.
+
+## 12. Arrays
+Arrays are used to store multiple values in a single variable.
+`int[] myNum = {10, 20, 30, 40};`
+
+## 13. Strings
+Strings are used for storing text. String methods include `length()`, `toUpperCase()`, `indexOf()`, `substring()`. Strings in Java are immutable.
+
+## 14. Methods
+A method is a block of code which only runs when it is called. You can pass data, known as parameters, into a method.
+
+## 15. Classes and Objects
+Class is a template or blueprint. Object is an instance of a class.
+
+## 16. Constructors
+A special method used to initialize objects. It is called when an object of a class is created.
+
+## 17. Access Modifiers
+`public`, `private`, `protected`, and default. They determine the visibility of classes, variables, and methods.
+
+## 18. Static Keyword
+Belongs to the class rather than an instance of the class. A static method can be accessed without creating an object of the class.
+
+## 19. Inheritance
+One class acquires the properties and behaviors of a parent class. Uses the `extends` keyword.
+
+## 20. Polymorphism
+Means "many forms", and it occurs when we have many classes that are related to each other by inheritance. Includes method overloading and method overriding.
+
+## 21. Abstraction
+Data abstraction is the process of hiding certain details and showing only essential information to the user. Achieved with abstract classes or interfaces.
+
+## 22. Encapsulation
+The meaning of Encapsulation is to make sure that "sensitive" data is hidden from users. Achieved using `private` variables and providing `get` and `set` methods.
+
+## 23. Interfaces
+Another way to achieve abstraction. An interface is a completely "abstract class" that is used to group related methods with empty bodies. Uses `implements` keyword.
+
+## 24. Exception Handling
+Exceptions are runtime errors. Handled using `try`, `catch`, `finally`, `throw`, and `throws`.
+
+## 25. Collections Basics
+The Collection in Java is a framework that provides an architecture to store and manipulate the group of objects. Includes `ArrayList`, `LinkedList`, `HashSet`, `HashMap`.
+
+## 26. File Handling Basics
+File handling in Java implies reading from and writing to files using `java.io.File`, `java.io.FileReader`, `java.io.FileWriter`.
+
+## 27. Code Examples
+```java
+public class Animal {
+  public void animalSound() {
+    System.out.println("The animal makes a sound");
+  }
+}
+public class Pig extends Animal {
+  public void animalSound() {
+    System.out.println("The pig says: wee wee");
+  }
+}
+```
+
+## 28. Practice Programs
+1. Write a program to reverse a string.
+2. Write a program to find the factorial of a number.
+3. Write a program to check if a number is prime.
+
+## 29. Summary
+Java is a versatile, object-oriented language emphasizing strict type safety and a robust standard library.
+
+## 30. MCQ-Ready Facts
+- JVM stands for Java Virtual Machine.
+- Multiple inheritance of classes is not supported in Java.
+- String objects are immutable in Java.
+
+## 31. Viva Questions
+Q: Why is Java platform independent?
+A: Because it compiles to bytecode, which can be executed on any OS with a JVM.
+
+## 32. Assignment Questions
+1. Create a Java application modeling a banking system with encapsulation and inheritance.
+2. Demonstrate exception handling by creating custom exceptions for a login module.

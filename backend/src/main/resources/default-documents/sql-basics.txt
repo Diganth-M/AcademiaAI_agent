@@ -1,0 +1,142 @@
+# SQL Basics
+
+## 1. Introduction to databases
+A database is an organized collection of data, generally stored and accessed electronically from a computer system.
+
+## 2. DBMS and RDBMS
+- DBMS: Database Management System. A software that interacts with end users, applications, and the database itself to capture and analyze the data.
+- RDBMS: Relational Database Management System. A DBMS based on the relational model, which stores data in the form of tables (rows and columns).
+
+## 3. Tables, rows, and columns
+- Table: A collection of related data entries consisting of columns and rows.
+- Column (Field): A vertical entity in a table containing all information associated with a specific field.
+- Row (Record): A horizontal entity in a table representing a single, implicitly structured data item.
+
+## 4. Primary keys
+A primary key is a specific choice of a minimal set of attributes (columns) that uniquely specify a tuple (row) in a relation (table).
+
+## 5. Foreign keys
+A foreign key is a field (or collection of fields) in one table, that refers to the primary key in another table.
+
+## 6. SQL data types
+Common types include `INT`, `VARCHAR`, `TEXT`, `DATE`, `DATETIME`, `BOOLEAN`, `DECIMAL`, `FLOAT`.
+
+## 7. CREATE DATABASE
+`CREATE DATABASE database_name;`
+
+## 8. CREATE TABLE
+```sql
+CREATE TABLE Users (
+    ID int PRIMARY KEY,
+    LastName varchar(255),
+    FirstName varchar(255),
+    Age int
+);
+```
+
+## 9. INSERT
+`INSERT INTO Users (ID, LastName, FirstName, Age) VALUES (1, 'Doe', 'John', 25);`
+
+## 10. SELECT
+`SELECT column1, column2 FROM table_name;`
+`SELECT * FROM Users;`
+
+## 11. WHERE
+The `WHERE` clause is used to filter records.
+`SELECT * FROM Users WHERE Age > 18;`
+
+## 12. ORDER BY
+The `ORDER BY` keyword is used to sort the result-set in ascending or descending order.
+`SELECT * FROM Users ORDER BY Age DESC;`
+
+## 13. DISTINCT
+The `SELECT DISTINCT` statement is used to return only distinct (different) values.
+`SELECT DISTINCT LastName FROM Users;`
+
+## 14. UPDATE
+The `UPDATE` statement is used to modify the existing records in a table.
+`UPDATE Users SET Age = 26 WHERE ID = 1;`
+
+## 15. DELETE
+The `DELETE` statement is used to delete existing records in a table.
+`DELETE FROM Users WHERE ID = 1;`
+
+## 16. ALTER TABLE
+The `ALTER TABLE` statement is used to add, delete, or modify columns in an existing table.
+`ALTER TABLE Users ADD Email varchar(255);`
+
+## 17. DROP and TRUNCATE
+- `DROP TABLE Users;` (Deletes table and its data completely)
+- `TRUNCATE TABLE Users;` (Deletes data inside table, but keeps the table structure)
+
+## 18. Constraints
+Rules applied on data columns. `NOT NULL`, `UNIQUE`, `PRIMARY KEY`, `FOREIGN KEY`, `CHECK`, `DEFAULT`.
+
+## 19. Aggregate functions
+Functions that operate on a set of values and return a single value.
+`MIN()`, `MAX()`, `COUNT()`, `AVG()`, `SUM()`.
+
+## 20. GROUP BY
+Groups rows that have the same values into summary rows.
+`SELECT COUNT(ID), Country FROM Users GROUP BY Country;`
+
+## 21. HAVING
+The `HAVING` clause was added to SQL because the `WHERE` keyword cannot be used with aggregate functions.
+`SELECT COUNT(ID), Country FROM Users GROUP BY Country HAVING COUNT(ID) > 5;`
+
+## 22. Joins
+A `JOIN` clause is used to combine rows from two or more tables, based on a related column between them.
+- `INNER JOIN`: Returns records that have matching values in both tables.
+- `LEFT JOIN`: Returns all records from the left table, and the matched records from the right.
+- `RIGHT JOIN`: Returns all records from the right table, and the matched records from the left.
+- `FULL OUTER JOIN`: Returns all records when there is a match in either left or right table.
+
+## 23. Subqueries
+A subquery is a query nested inside a larger query.
+`SELECT * FROM Users WHERE Age > (SELECT AVG(Age) FROM Users);`
+
+## 24. Views
+A view is a virtual table based on the result-set of an SQL statement.
+`CREATE VIEW [Adult Users] AS SELECT * FROM Users WHERE Age >= 18;`
+
+## 25. Indexes
+Indexes are used to retrieve data from the database very fast.
+`CREATE INDEX idx_lastname ON Users (LastName);`
+
+## 26. Normalization
+The process of organizing data in a database to reduce redundancy and improve data integrity (1NF, 2NF, 3NF).
+
+## 27. Transactions
+A logical unit of work that contains one or more SQL statements. Follows ACID properties (Atomicity, Consistency, Isolation, Durability).
+
+## 28. COMMIT and ROLLBACK
+- `COMMIT` saves the transaction permanently.
+- `ROLLBACK` undoes the transaction.
+
+## 29. SQL code examples
+```sql
+SELECT Orders.OrderID, Customers.CustomerName
+FROM Orders
+INNER JOIN Customers ON Orders.CustomerID = Customers.CustomerID;
+```
+
+## 30. Practice queries
+1. Write a query to find the second highest salary of an Employee.
+2. Write a query to fetch duplicate records from a table.
+3. Write a query to fetch the first 5 records from a table.
+
+## 31. Summary
+SQL is the standard declarative language for interacting with Relational Database Management Systems.
+
+## 32. MCQ-Ready Facts
+- TRUNCATE is faster than DELETE.
+- Primary key enforces uniqueness and NOT NULL.
+- DDL includes CREATE, ALTER, DROP. DML includes INSERT, UPDATE, DELETE.
+
+## 33. Viva Questions
+Q: What is the difference between WHERE and HAVING?
+A: WHERE filters rows before aggregation, while HAVING filters groups after aggregation.
+
+## 34. Assignment Questions
+1. Design a normalized schema for a university library.
+2. Write a complex query using window functions to calculate running totals.

@@ -10,25 +10,85 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
-    
-    if (token && userData) {
-      setUser(JSON.parse(userData));
-    }
-    setLoading(false);
+    const fetchUser = async () => {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      if (token) {
+        try {
+          const response = await api.get('/users/profile');
+          setUser(response.data);
+        } catch (error) {
+          console.error("Failed to fetch user profile", error);
+          const userData = localStorage.getItem('user') || sessionStorage.getItem('user');
+          if (userData) setUser(JSON.parse(userData));
+        }
+      }
+      setLoading(false);
+    };
+    fetchUser();
   }, []);
 
-  const login = async (username, password) => {
+  const updateProfileData = (newData) => {
+    setUser(newData);
+    
+    // Determine if we should use localStorage or sessionStorage based on where token is
+    const isLocal = !!localStorage.getItem('token');
+    const storage = isLocal ? localStorage : sessionStorage;
+    
+    const existingUserData = JSON.parse(storage.getItem('user') || '{}');
+    const updatedUserData = {
+      ...existingUserData,
+      fullName: newData.fullName,
+      username: newData.username,
+      email: newData.email,
+      profileImageUrl: newData.profileImageUrl
+    };
+    
+    storage.setItem('user', JSON.stringify(updatedUserData));
+  };
+
+  const login = async (username, password, keepLoggedIn = false) => {
     const response = await api.post('/auth/login', { username, password });
-    const { token, id, email } = response.data;
-    const userData = { id, username, email };
+    const { token, id, email, username: actualUsername } = response.data;
     
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(userData));
+    if (keepLoggedIn) {
+      localStorage.setItem('token', token);
+    } else {
+      sessionStorage.setItem('token', token);
+    }
     
-    setUser(userData);
-    return response.data;
+    // Fetch full profile data so the UI has name and image immediately
+    try {
+      const profileResponse = await api.get('/users/profile');
+      const profileData = profileResponse.data;
+      
+      const userData = {
+        id,
+        username: actualUsername,
+        email,
+        fullName: profileData.fullName,
+        profileImageUrl: profileData.profileImageUrl
+      };
+      
+      if (keepLoggedIn) {
+        localStorage.setItem('user', JSON.stringify(userData));
+      } else {
+        sessionStorage.setItem('user', JSON.stringify(userData));
+      }
+      
+      setUser(userData);
+      return response.data;
+    } catch (err) {
+      console.error("Failed to fetch full profile after login", err);
+      // Fallback
+      const fallbackUserData = { id, username: actualUsername, email };
+      if (keepLoggedIn) {
+        localStorage.setItem('user', JSON.stringify(fallbackUserData));
+      } else {
+        sessionStorage.setItem('user', JSON.stringify(fallbackUserData));
+      }
+      setUser(fallbackUserData);
+      return response.data;
+    }
   };
 
   const register = async (username, email, password) => {
@@ -39,6 +99,8 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
     setUser(null);
   };
 
@@ -47,7 +109,8 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    loading
+    loading,
+    updateProfileData
   };
 
   return (

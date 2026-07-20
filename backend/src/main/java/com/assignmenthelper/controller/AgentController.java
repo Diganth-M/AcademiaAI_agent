@@ -34,20 +34,23 @@ public class AgentController {
             Document doc = documentService.getDocumentByIdAndUser(request.getDocumentId(), userDetails.getUsername());
             
             String extractedText = doc.getExtractedText();
+            if (extractedText == null || extractedText.trim().length() < 100) {
+                return ResponseEntity.status(422).body("This document does not contain enough extracted content for generation.");
+            }
             String output = "";
             
             switch (request.getType().toUpperCase()) {
                 case "EXPLANATION":
-                    output = aiService.explainChapter(extractedText);
+                    output = aiService.explainChapter(extractedText, request.getLanguage());
                     break;
                 case "ASSIGNMENT":
-                    output = aiService.generateAssignmentAnswers(extractedText, request.getAdditionalPrompt());
+                    output = aiService.generateAssignmentAnswers(extractedText, request.getAdditionalPrompt(), request.getLanguage());
                     break;
                 case "MCQ":
-                    output = aiService.generateMCQs(extractedText);
+                    output = aiService.generateMCQs(extractedText, request.getLanguage());
                     break;
                 case "VIVA":
-                    output = aiService.generateVivaQuestions(extractedText);
+                    output = aiService.generateVivaQuestions(extractedText, request.getLanguage());
                     break;
                 default:
                     return ResponseEntity.badRequest().body("Invalid generation type");
@@ -68,6 +71,19 @@ public class AgentController {
         }
     }
     
+    @PostMapping("/translate")
+    public ResponseEntity<?> translateContent(@RequestBody com.assignmenthelper.dto.TranslateRequest request) {
+        try {
+            if (request.getText() == null || request.getText().isEmpty()) {
+                return ResponseEntity.badRequest().body("No text provided for translation");
+            }
+            String translated = aiService.translateText(request.getText(), request.getTargetLanguage());
+            return ResponseEntity.ok(java.util.Collections.singletonMap("translatedText", translated));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Translation failed: " + e.getMessage());
+        }
+    }
+
     @GetMapping("/history/{documentId}")
     public ResponseEntity<?> getGenerationHistory(@PathVariable Long documentId) {
         try {
@@ -79,6 +95,40 @@ public class AgentController {
             return ResponseEntity.ok(history);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to fetch history: " + e.getMessage());
+        }
+    }
+
+    @Autowired
+    private com.assignmenthelper.service.EmailService emailService;
+
+    @Autowired
+    private com.assignmenthelper.repository.UserRepository userRepository;
+
+    @PostMapping("/email-content")
+    public ResponseEntity<?> emailContent(@RequestBody com.assignmenthelper.dto.EmailContentRequest request) {
+        try {
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            com.assignmenthelper.model.User user = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
+            
+            if (user == null) {
+                return ResponseEntity.badRequest().body("User not found");
+            }
+            
+            if (user.getEmail() == null || user.getEmail().isEmpty()) {
+                return ResponseEntity.badRequest().body("User does not have a registered email address.");
+            }
+
+            emailService.sendStudyMaterialEmail(
+                user.getEmail(), 
+                user.getUsername(), 
+                request.getContentType(), 
+                request.getTopic(), 
+                request.getContent()
+            );
+
+            return ResponseEntity.ok("Email sent successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to send email: " + e.getMessage());
         }
     }
 }

@@ -1,0 +1,104 @@
+# Python Basics
+
+## 1. Introduction to Python
+Python is a high-level, interpreted, general-purpose programming language. Its design philosophy emphasizes code readability with the use of significant indentation. It is dynamically typed and garbage-collected.
+
+## 2. Python Installation and Execution
+Python is executed using an interpreter. You can run code interactively via REPL, or by executing scripts `python script.py`.
+
+## 3. Variables
+Variables are created when you assign a value to them. Python has no command for declaring a variable.
+
+## 4. Data Types
+Built-in data types include Text Type: `str`, Numeric Types: `int`, `float`, `complex`, Sequence Types: `list`, `tuple`, `range`, Mapping Type: `dict`, Set Types: `set`, `frozenset`, Boolean Type: `bool`.
+
+## 5. Type Conversion
+Implicit casting happens automatically. Explicit casting is done using constructor functions like `int()`, `float()`, `str()`.
+
+## 6. Operators
+Arithmetic, Assignment, Comparison, Logical, Identity (`is`, `is not`), Membership (`in`, `not in`), Bitwise.
+
+## 7. Input and Output
+Output: `print()`
+Input: `input()`
+
+## 8. Conditional Statements
+Python relies on indentation (whitespace at the beginning of a line) to define scope in the code. Uses `if`, `elif`, `else`.
+
+## 9. Loops
+`while` loop executes as long as a condition is true. `for` loop is used for iterating over a sequence (list, tuple, dictionary, set, string).
+
+## 10. Strings
+Strings in Python are surrounded by either single quotation marks or double quotation marks. They are immutable.
+
+## 11. Lists
+Lists are used to store multiple items in a single variable. They are ordered, changeable, and allow duplicate values. `my_list = [1, 2, 3]`
+
+## 12. Tuples
+Tuples are used to store multiple items in a single variable. They are ordered, UNCHANGEABLE, and allow duplicate values. `my_tuple = (1, 2, 3)`
+
+## 13. Sets
+Sets are used to store multiple items in a single variable. They are unordered, unchangeable, and do NOT allow duplicate values. `my_set = {1, 2, 3}`
+
+## 14. Dictionaries
+Dictionaries are used to store data values in key:value pairs. They are ordered (Python 3.7+), changeable, and do not allow duplicates. `my_dict = {"key": "value"}`
+
+## 15. Functions
+A function is a block of code which only runs when it is called. Defined using the `def` keyword.
+
+## 16. Lambda Functions
+A lambda function is a small anonymous function. It can take any number of arguments, but can only have one expression. `x = lambda a : a + 10`
+
+## 17. Modules and Packages
+A module is a file containing a set of functions you want to include in your application. A package is a collection of modules.
+
+## 18. File Handling
+The key function for working with files in Python is the `open()` function. Modes include `r` (read), `a` (append), `w` (write), `x` (create).
+
+## 19. Exception Handling
+Handled using `try`, `except`, `else`, and `finally` blocks.
+
+## 20. Classes and Objects
+Python is an object-oriented programming language. Almost everything in Python is an object, with its properties and methods. Defined using the `class` keyword. `__init__()` is the constructor.
+
+## 21. Inheritance Basics
+Inheritance allows us to define a class that inherits all the methods and properties from another class.
+```python
+class Person:
+  pass
+class Student(Person):
+  pass
+```
+
+## 22. Common Built-in Functions
+Functions like `len()`, `type()`, `dir()`, `id()`, `min()`, `max()`, `sum()`, `sorted()`.
+
+## 23. Code Examples
+```python
+def my_function(fname):
+  print(fname + " Refsnes")
+
+my_function("Emil")
+my_function("Tobias")
+```
+
+## 24. Practice Programs
+1. Find the Fibonacci series using Python.
+2. Check if a string is a palindrome.
+3. Write a program to merge two dictionaries.
+
+## 25. Summary
+Python is a versatile, dynamic language known for its readability, vast ecosystem, and flexibility across domains (web, data science, scripting).
+
+## 26. MCQ-Ready Facts
+- Indentation is mandatory in Python.
+- Dictionaries use key-value pairs.
+- Tuples are immutable, while lists are mutable.
+
+## 27. Viva Questions
+Q: What is the difference between a list and a tuple in Python?
+A: Lists are mutable, meaning their contents can be changed, while tuples are immutable and cannot be altered after creation.
+
+## 28. Assignment Questions
+1. Create a script that reads a CSV file and calculates the average of a specific column.
+2. Implement a Python class representing a Bank Account with deposit and withdraw methods.

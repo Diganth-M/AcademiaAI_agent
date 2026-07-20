@@ -81,10 +81,10 @@ spring.datasource.password=root
 app.jwt.secret=your_super_secret_base64_encoded_jwt_key_here
 app.jwt.expiration-ms=86400000
 
-# OpenAI Configuration
+# Gemini Configuration
 # YOU MUST EXPORT THIS AS AN ENVIRONMENT VARIABLE BEFORE RUNNING
-openai.api.key=${OPENAI_API_KEY}
-openai.api.url=https://api.openai.com/v1/chat/completions
+gemini.api.key=${GEMINI_API_KEY}
+gemini.api.url=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent
 
 # File Upload Configuration
 spring.servlet.multipart.max-file-size=50MB
@@ -122,13 +122,13 @@ const API_URL = 'http://localhost:8080/api';
 ## 🏃 Run Commands
 
 ### 1. Start the Backend
-Open a terminal, set your OpenAI API key, and start Spring Boot:
+Open a terminal, set your Gemini API key, and start Spring Boot:
 ```bash
-cd assignment-helper-backend
+cd backend
 # On Windows (PowerShell):
-$env:OPENAI_API_KEY="sk-your-actual-api-key"
+$env:GEMINI_API_KEY="your-actual-api-key"
 # On Mac/Linux:
-export OPENAI_API_KEY="sk-your-actual-api-key"
+export GEMINI_API_KEY="your-actual-api-key"
 
 mvn clean spring-boot:run
 ```
@@ -150,7 +150,7 @@ Navigate to `http://localhost:5173` in your browser.
 2. **Account Creation**: Go to `http://localhost:5173/register` and create an account.
 3. **Login**: Go to `/login` and authenticate. Ensure the Dashboard loads and the JWT is stored in `localStorage`.
 4. **File Upload**: On the Dashboard, upload a `.pdf` file (e.g., lecture notes). Wait for the upload to complete; you should be redirected to the Document View.
-5. **AI Generation**: Click **Generate Explanation**. Wait for the API to process and verify that the OpenAI response is rendered beautifully on the screen.
+5. **AI Generation**: Click **Generate Explanation**. Wait for the API to process and verify that the Gemini response is rendered beautifully on the screen.
 6. **Check History**: Click the "History" tab on the sidebar to ensure your uploaded document and generated output were successfully persisted in the database.
 
 ---
@@ -158,6 +158,6 @@ Navigate to `http://localhost:5173` in your browser.
 ## 🚀 Future Improvements
 
 - **Vector Database (RAG):** Instead of sending the entire document context in every prompt, implement a Vector Database (like Pinecone or Milvus) to utilize Retrieval-Augmented Generation for massive textbook PDFs.
-- **WebSocket Streaming:** Instead of making the user wait for the entire OpenAI response to generate, use Server-Sent Events (SSE) or WebSockets to stream the AI tokens directly to the React UI in real-time.
+- **WebSocket Streaming:** Instead of making the user wait for the entire Gemini response to generate, use Server-Sent Events (SSE) or WebSockets to stream the AI tokens directly to the React UI in real-time.
 - **Export to PDF:** Allow students to export their generated assignments or MCQs into a neatly formatted downloadable PDF document.
 - **Cloud Storage:** Migrate from local file storage (`/uploads`) to Amazon S3 for production deployments.

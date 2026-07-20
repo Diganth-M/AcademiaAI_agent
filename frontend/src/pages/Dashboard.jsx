@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
@@ -21,8 +21,18 @@ const Dashboard = () => {
     setLoading(true);
     try {
       const response = await api.post('/documents/upload', formData);
+      
+      const documentId = response?.data?.documentId || response?.data?.id;
+      
+      if (!documentId) {
+        throw new Error("Upload succeeded but document ID was not returned.");
+      }
+      
+      console.log("Upload response:", response.data);
+      console.log("Navigating to document:", documentId);
+      
       // Redirect to document view with the ID
-      navigate(`/document/${response.data.id}`);
+      navigate(`/document/${documentId}`);
     } catch (error) {
       console.error('Upload failed:', error.response?.data || error);
       alert('Upload failed: ' + (error.response?.data || error.message));
@@ -32,12 +42,27 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="animate-fade-in">
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <div className="glass-card text-center">
-          <h2 style={{ marginBottom: '1rem', color: 'var(--accent-primary)' }}>Upload your Notes or PDF</h2>
-          <p style={{ marginBottom: '2rem' }}>
-            Get AI-generated explanations, assignments, MCQs, and viva questions instantly.
+    <div className="animate-fade-in" style={{
+      minHeight: 'calc(100vh - 64px)', // Adjust based on your navbar height
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '2rem',
+      // Using an unsplash image that looks like the provided laptop/notebook image
+      backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&q=80&w=1920')`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      margin: '-2rem', // Assuming the container has padding, this pulls the background to the edges
+      flexDirection: 'column',
+      justifyContent: 'flex-start',
+      overflowY: 'auto'
+    }}>
+      <div style={{ width: '100%', maxWidth: '1000px', margin: '0 auto', paddingTop: '2rem', paddingBottom: '4rem' }}>
+        <div className="glass-card text-center" style={{ background: 'rgba(0, 0, 0, 0.4)', backdropFilter: 'blur(10px)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <h2 style={{ marginBottom: '1rem', color: 'var(--accent-primary)', textShadow: '0 2px 4px rgba(0,0,0,0.8)', fontWeight: '700' }}>Build your AI Knowledge Base</h2>
+          <p style={{ marginBottom: '2rem', textShadow: '0 1px 3px rgba(0,0,0,0.8)', fontWeight: '500', fontSize: '1.1rem' }}>
+            Your Personal AI Professor will help you learn with tailored explanations, real-life examples, and conversational memory.
           </p>
           
           <form onSubmit={handleUpload}>
@@ -63,7 +88,7 @@ const Dashboard = () => {
               {file ? (
                 <p style={{ color: 'var(--success)', fontWeight: 'bold' }}>{file.name} selected</p>
               ) : (
-                <p>Click to browse or drag and drop a file here</p>
+                <p style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)', fontWeight: '500' }}>Click to browse or drag and drop a file here</p>
               )}
             </div>
             

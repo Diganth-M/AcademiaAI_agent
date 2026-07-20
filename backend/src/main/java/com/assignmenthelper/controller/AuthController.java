@@ -43,19 +43,33 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
+        
+        // First check if user exists
+        boolean userExists = userRepository.existsByUsername(loginRequest.getUsername()) || 
+                             userRepository.existsByEmail(loginRequest.getUsername());
+        
+        if (!userExists) {
+            return ResponseEntity.badRequest().body(new MessageResponse("User not registered. Please register first."));
+        }
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtUtils.generateJwtToken(authentication);
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        return ResponseEntity.ok(new JwtResponse(jwt,
-                userDetails.getId(),
-                userDetails.getUsername(),
-                userDetails.getEmail()));
+            return ResponseEntity.ok(new JwtResponse(jwt,
+                    userDetails.getId(),
+                    userDetails.getUsername(),
+                    userDetails.getEmail()));
+        } catch (org.springframework.security.authentication.BadCredentialsException e) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Invalid password."));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Login failed: " + e.getMessage()));
+        }
     }
 
     @PostMapping("/register")

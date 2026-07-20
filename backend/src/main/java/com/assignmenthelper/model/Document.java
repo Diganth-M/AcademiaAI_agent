@@ -13,6 +13,7 @@ public class Document {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private User user;
     
     @Column(nullable = false)
@@ -26,6 +27,13 @@ public class Document {
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+    
+    @Column(name = "source_type")
+    @Enumerated(EnumType.STRING)
+    private DocumentSourceType sourceType = DocumentSourceType.USER_UPLOAD;
+    
+    @Column(name = "default_document_id")
+    private String defaultDocumentId;
     
     @PrePersist
     protected void onCreate() {
@@ -45,4 +53,8 @@ public class Document {
     public void setExtractedText(String extractedText) { this.extractedText = extractedText; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public DocumentSourceType getSourceType() { return sourceType; }
+    public void setSourceType(DocumentSourceType sourceType) { this.sourceType = sourceType; }
+    public String getDefaultDocumentId() { return defaultDocumentId; }
+    public void setDefaultDocumentId(String defaultDocumentId) { this.defaultDocumentId = defaultDocumentId; }
 }

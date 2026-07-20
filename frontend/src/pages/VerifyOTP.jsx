@@ -12,7 +12,7 @@ const VerifyOTP = () => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes
+  const [timeLeft, setTimeLeft] = useState(30); // 30 seconds
 
   useEffect(() => {
     if (!initialEmail) {
@@ -59,7 +59,7 @@ const VerifyOTP = () => {
     try {
       const response = await resendOtp(email);
       setMessage(response.data.message || 'New OTP sent');
-      setTimeLeft(600); // Reset timer
+      setTimeLeft(30); // Reset timer
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to resend OTP');
     } finally {

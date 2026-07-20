@@ -32,6 +32,18 @@ public class DocumentService {
     @Autowired
     private PdfService pdfService;
 
+    @Autowired
+    private AiService aiService;
+
+    @Autowired
+    private com.assignmenthelper.repository.GenerationRepository generationRepository;
+
+    @Autowired
+    private com.assignmenthelper.repository.ChatSessionRepository chatSessionRepository;
+
+    @Autowired
+    private com.assignmenthelper.repository.ChatMessageRepository chatMessageRepository;
+
     public Document saveDocument(MultipartFile file, String username) throws IOException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -61,6 +73,53 @@ public class DocumentService {
         document.setTitle(file.getOriginalFilename());
         document.setFilePath(filePath.toString());
         document.setExtractedText(extractedText);
+        document.setSourceType(com.assignmenthelper.model.DocumentSourceType.USER_UPLOAD);
+        
+        return documentRepository.save(document);
+    }
+    
+    public Document saveDefaultDocument(String defaultDocumentId, String username) throws IOException {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Check if user already has this default document
+        java.util.Optional<Document> existingDoc = documentRepository.findByUserIdAndDefaultDocumentId(user.getId(), defaultDocumentId);
+        if (existingDoc.isPresent()) {
+            return existingDoc.get();
+        }
+
+        // Read from resources
+        String filename = defaultDocumentId + ".txt";
+        org.springframework.core.io.Resource resource = new org.springframework.core.io.ClassPathResource("default-documents/" + filename);
+        
+        if (!resource.exists()) {
+            throw new RuntimeException("Default document not found: " + filename);
+        }
+
+        // Extract text
+        String extractedText = new String(resource.getInputStream().readAllBytes());
+
+        // Validate text length
+        if (extractedText == null || extractedText.trim().length() < 100) {
+             throw new RuntimeException("Default document is currently unavailable. Not enough content extracted.");
+        }
+
+        // Save to DB
+        Document document = new Document();
+        document.setUser(user);
+        
+        // Map ID to Title
+        String title = defaultDocumentId;
+        if (defaultDocumentId.equals("java-basics")) title = "Java Basics";
+        if (defaultDocumentId.equals("python-basics")) title = "Python Basics";
+        if (defaultDocumentId.equals("oops-concepts")) title = "OOP Concepts";
+        if (defaultDocumentId.equals("sql-basics")) title = "SQL Basics";
+        
+        document.setTitle(title);
+        document.setFilePath("classpath:default-documents/" + filename);
+        document.setExtractedText(extractedText);
+        document.setSourceType(com.assignmenthelper.model.DocumentSourceType.DEFAULT_DOCUMENT);
+        document.setDefaultDocumentId(defaultDocumentId);
         
         return documentRepository.save(document);
     }
@@ -81,5 +140,42 @@ public class DocumentService {
             throw new RuntimeException("Unauthorized to access this document");
         }
         return doc;
+    }
+
+    @org.springframework.transaction.annotation.Transactional
+    public void deleteDocument(Long documentId, String username) {
+        Document doc = getDocumentByIdAndUser(documentId, username);
+        
+        // Delete associated generations
+        generationRepository.deleteByDocumentId(documentId);
+
+        // Delete associated chat sessions and messages
+        List<com.assignmenthelper.model.ChatSession> sessions = chatSessionRepository.findByDocumentId(documentId);
+        for (com.assignmenthelper.model.ChatSession s : sessions) {
+            chatMessageRepository.deleteBySessionId(s.getId());
+        }
+        chatSessionRepository.deleteByDocumentId(documentId);
+        
+        // Delete file from disk if it was uploaded by the user
+        try {
+            if (doc.getFilePath() != null && !doc.getFilePath().startsWith("classpath:")) {
+                Files.deleteIfExists(Paths.get(doc.getFilePath()));
+            }
+        } catch (IOException e) {
+            System.err.println("Failed to delete file: " + doc.getFilePath());
+        } catch (Exception e) {
+            System.err.println("Error deleting file path " + doc.getFilePath() + ": " + e.getMessage());
+        }
+        
+        // Delete document from DB
+        documentRepository.delete(doc);
+    }
+
+    @org.springframework.transaction.annotation.Transactional
+    public void deleteAllDocumentsByUser(String username) {
+        List<Document> docs = getUserDocuments(username);
+        for (Document doc : docs) {
+            deleteDocument(doc.getId(), username);
+        }
     }
 }

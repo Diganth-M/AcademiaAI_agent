@@ -1,0 +1,117 @@
+# OOP Concepts
+
+## 1. Introduction to object-oriented programming
+Object-Oriented Programming (OOP) is a programming paradigm based on the concept of "objects", which can contain data and code: data in the form of fields (often known as attributes or properties), and code, in the form of procedures (often known as methods).
+
+## 2. Procedural programming versus OOP
+Procedural programming is about writing procedures or functions that perform operations on the data, while object-oriented programming is about creating objects that contain both data and functions. OOP is faster, easier to execute, provides a clear structure, and allows DRY code.
+
+## 3. Class
+A class is a blueprint or template from which objects are created. It defines a set of properties and methods that are common to all objects of one type.
+
+## 4. Object
+An object is an instance of a class. When a class is defined, no memory is allocated but when it is instantiated (i.e. an object is created), memory is allocated.
+
+## 5. Attributes
+Attributes are the data members of a class. They represent the state of an object.
+
+## 6. Methods
+Methods are functions defined inside a class that describe the behaviors of an object.
+
+## 7. Constructors
+A constructor is a special type of method that is used to initialize the object. It is called when an instance of the class is created.
+
+## 8. Encapsulation
+Encapsulation is the bundling of data and the methods that operate on that data into a single unit (class). It also restricts direct access to some of the object's components, which is a means of preventing accidental interference.
+
+## 9. Abstraction
+Abstraction is the concept of object-oriented programming that "shows" only essential attributes and "hides" unnecessary information from the outside.
+
+## 10. Inheritance
+Inheritance is a mechanism wherein a new class is derived from an existing class. It promotes code reusability. The existing class is the superclass, and the derived class is the subclass.
+
+## 11. Types of Inheritance
+- Single Inheritance
+- Multilevel Inheritance
+- Hierarchical Inheritance
+- Multiple Inheritance (supported through interfaces in some languages like Java)
+- Hybrid Inheritance
+
+## 12. Polymorphism
+Polymorphism means "many forms". It allows objects of different classes to be treated as objects of a common superclass.
+
+## 13. Method Overloading
+Compile-time polymorphism. Having multiple methods in the same class with the same name but different parameters (type or number).
+
+## 14. Method Overriding
+Run-time polymorphism. Having a method in a subclass with the same name, return type, and parameters as a method in its superclass.
+
+## 15. Association
+Association establishes a relationship between two separate classes through their objects. The relationship can be one-to-one, one-to-many, many-to-one, many-to-many.
+
+## 16. Aggregation
+A weak form of association representing a "has-a" relationship where the child can exist independently of the parent. (e.g., Department and Teachers).
+
+## 17. Composition
+A strong form of association representing a "part-of" relationship where the child cannot exist independently of the parent. (e.g., House and Rooms).
+
+## 18. Interfaces
+An interface is a contract that specifies what a class must do, but not how it does it. It contains abstract methods.
+
+## 19. Abstract Classes
+A class that cannot be instantiated and may contain both abstract and concrete methods.
+
+## 20. Access Modifiers
+Keywords that set the accessibility of classes, methods, and other members. Usually public, private, protected, and default.
+
+## 21. SOLID Principles Introduction
+- S: Single Responsibility Principle
+- O: Open-Closed Principle
+- L: Liskov Substitution Principle
+- I: Interface Segregation Principle
+- D: Dependency Inversion Principle
+
+## 22. Real-world Examples
+- Class: Car blueprint. Object: A specific Honda Civic.
+- Inheritance: Animal -> Dog.
+- Encapsulation: A capsule containing medicine.
+
+## 23. Java Examples
+```java
+class Animal {
+  void eat() { System.out.println("Eating..."); }
+}
+class Dog extends Animal {
+  void bark() { System.out.println("Barking..."); }
+}
+```
+
+## 24. Python Examples
+```python
+class Animal:
+    def eat(self):
+        print("Eating...")
+class Dog(Animal):
+    def bark(self):
+        print("Barking...")
+```
+
+## 25. Advantages and limitations of OOP
+Advantages: Modularity, Reusability, Maintainability, Security.
+Limitations: Steeper learning curve, potentially larger program size, can be slower than procedural programming.
+
+## 26. Summary
+OOP is a powerful paradigm essential for modern software architecture, centered on Objects encapsulating state and behavior.
+
+## 27. MCQ-Ready Facts
+- Encapsulation hides data.
+- Overloading is compile-time polymorphism.
+- Overriding is run-time polymorphism.
+
+## 28. Viva Questions
+Q: Can an abstract class have a constructor?
+A: Yes, an abstract class can have a constructor to initialize its fields, even though it cannot be instantiated directly.
+
+## 29. Assignment Questions
+1. Design an e-commerce catalog system using interfaces and abstract classes.
+2. Explain composition vs aggregation with a concrete code example.

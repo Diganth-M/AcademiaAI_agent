@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface GenerationRepository extends JpaRepository<Generation, Long> {
     List<Generation> findByDocumentIdOrderByCreatedAtDesc(Long documentId);
+    void deleteByDocumentId(Long documentId);
 }
