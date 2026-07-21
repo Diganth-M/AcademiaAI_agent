@@ -14,7 +14,7 @@ public class EmailService {
     public void sendPasswordResetOtp(String toEmail, String otp) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(toEmail);
-        message.setSubject("Assignment Helper Agent - Password Reset Verification");
+        message.setSubject("AcademiaAI agent - Password Reset Verification");
         
         String body = "Hello,\n\n"
                 + "Your verification code is:\n\n"
@@ -22,7 +22,7 @@ public class EmailService {
                 + "This code is valid for 10 minutes.\n\n"
                 + "Do not share this code with anyone.\n\n"
                 + "Regards,\n"
-                + "Assignment Helper Agent";
+                + "AcademiaAI agent";
                 
         message.setText(body);
         
@@ -50,7 +50,7 @@ public class EmailService {
 
             StringBuilder htmlMsg = new StringBuilder();
             htmlMsg.append("<h3>Hello ").append(userName).append(",</h3>");
-            htmlMsg.append("<p>Thank you for using Assignment Helper Agent.</p>");
+            htmlMsg.append("<p>Thank you for using AcademiaAI agent.</p>");
             htmlMsg.append("<p>Your requested study material has been generated successfully.</p>");
             htmlMsg.append("<h4>Content Details:</h4>");
             htmlMsg.append("<ul>");
@@ -70,11 +70,27 @@ public class EmailService {
             }
 
             htmlMsg.append("<br/><p>We hope this helps with your learning.</p>");
-            htmlMsg.append("<p>Best Regards,<br/>Assignment Helper Agent<br/>AI Powered Learning Platform</p>");
+            htmlMsg.append("<p>Best Regards,<br/>AcademiaAI agent<br/>AI Powered Learning Platform</p>");
 
             helper.setText(htmlMsg.toString(), true);
             mailSender.send(mimeMessage);
 
+        } catch (Exception e) {
+            System.err.println("Failed to send HTML email: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void sendHtmlEmail(String toEmail, String subject, String htmlBody) {
+        try {
+            jakarta.mail.internet.MimeMessage mimeMessage = mailSender.createMimeMessage();
+            org.springframework.mail.javamail.MimeMessageHelper helper = new org.springframework.mail.javamail.MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+            helper.setText(htmlBody, true);
+
+            mailSender.send(mimeMessage);
         } catch (Exception e) {
             System.err.println("Failed to send HTML email: " + e.getMessage());
             e.printStackTrace();

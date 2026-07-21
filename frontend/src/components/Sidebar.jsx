@@ -10,7 +10,7 @@ import {
   CircleUserRound, 
   BotMessageSquare, 
   BrainCircuit,
-  LogOut
+  LogOut,
 } from 'lucide-react';
 import bgSidebar from '../assets/bg_sidebar.png';
 
@@ -25,6 +25,8 @@ const sidebarItems = [
     path: "/default-documents",
     icon: LibraryBig
   },
+
+
   {
     label: "History",
     path: "/history",
@@ -64,7 +66,7 @@ const Sidebar = () => {
       <div className="sidebar-brand" style={{ padding: '0 0.5rem', zIndex: 2, display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'white' }}>
         <BrainCircuit size={28} color="var(--accent-primary)" />
         <h2 style={{ fontSize: '1.25rem', margin: 0 }}>
-          <span style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }}>Agent</span> Helper
+          <span style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }}>AcademiaAI</span> agent
         </h2>
       </div>
       

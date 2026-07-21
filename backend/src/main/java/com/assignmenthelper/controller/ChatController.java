@@ -1,6 +1,7 @@
 package com.assignmenthelper.controller;
 
 import com.assignmenthelper.dto.ChatRequest;
+import com.assignmenthelper.dto.ChatResponse;
 import com.assignmenthelper.model.ChatMessage;
 import com.assignmenthelper.model.ChatSession;
 import com.assignmenthelper.model.Document;
@@ -39,6 +40,7 @@ public class ChatController {
     @Autowired
     private DocumentRepository documentRepository;
 
+    
     private User getAuthenticatedUser() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userRepository.findByUsername(userDetails.getUsername()).orElse(null);
@@ -187,6 +189,7 @@ public class ChatController {
         if (request.getPageContext() != null) {
             contextBuilder.append("Page Context: ").append(request.getPageContext()).append("\n\n");
         }
+    
         if (request.getGenerationType() != null) {
             contextBuilder.append("Generation Type: ").append(request.getGenerationType()).append("\n\n");
         }
@@ -209,5 +212,128 @@ public class ChatController {
                     chatMessageRepository.save(aiMsg);
                 })
                 .map(chunk -> chunk.replace("\n", "\\n"));
+    }
+
+    @PostMapping
+    public ResponseEntity<ChatResponse> chat(@RequestBody ChatRequest request) {
+        ChatResponse response = new ChatResponse();
+        try {
+            User user = getAuthenticatedUser();
+            if (user == null) {
+                response.setSuccess(false);
+                response.setCode("UNAUTHORIZED");
+                response.setMessage("Your session has expired. Please log in again.");
+                return ResponseEntity.status(401).body(response);
+            }
+
+            if (request.getMessage() == null || request.getMessage().trim().isEmpty()) {
+                response.setSuccess(false);
+                response.setCode("INVALID_REQUEST");
+                response.setMessage("Please enter a valid question.");
+                return ResponseEntity.status(422).body(response);
+            }
+
+            ChatSession session;
+            if (request.getConversationId() != null && !request.getConversationId().trim().isEmpty()) {
+                session = chatSessionRepository.findByConversationIdAndUserId(request.getConversationId(), user.getId())
+                        .orElseGet(() -> {
+                            ChatSession newSession = new ChatSession();
+                            newSession.setUser(user);
+                            newSession.setConversationId(request.getConversationId());
+                            if (request.getDocumentId() != null) {
+                                Document doc = documentRepository.findById(request.getDocumentId()).orElse(null);
+                                if (doc != null && doc.getUser().getId().equals(user.getId())) newSession.setDocument(doc);
+                            }
+                            return chatSessionRepository.save(newSession);
+                        });
+            } else if (request.getDocumentId() != null) {
+                Document document = documentRepository.findById(request.getDocumentId()).orElse(null);
+                if (document == null || !document.getUser().getId().equals(user.getId())) {
+                    response.setSuccess(false);
+                    response.setCode("FORBIDDEN");
+                    response.setMessage("You do not have permission to use this assistant.");
+                    return ResponseEntity.status(403).body(response);
+                }
+                session = chatSessionRepository.findByDocumentIdAndUserId(document.getId(), user.getId())
+                        .orElseGet(() -> {
+                            ChatSession newSession = new ChatSession();
+                            newSession.setDocument(document);
+                            newSession.setUser(user);
+                            newSession.setConversationId(UUID.randomUUID().toString());
+                            return chatSessionRepository.save(newSession);
+                        });
+            } else {
+                ChatSession newSession = new ChatSession();
+                newSession.setUser(user);
+                newSession.setConversationId(UUID.randomUUID().toString());
+                session = chatSessionRepository.save(newSession);
+            }
+
+            ChatMessage userMsg = new ChatMessage();
+            userMsg.setSession(session);
+            userMsg.setRole("USER");
+            userMsg.setContent(request.getMessage());
+            chatMessageRepository.save(userMsg);
+
+            List<ChatMessage> historyMessages = chatMessageRepository.findBySessionIdOrderByCreatedAtAsc(session.getId());
+            List<Map<String, String>> history = new ArrayList<>();
+            for (ChatMessage m : historyMessages) {
+                if (m.getId().equals(userMsg.getId())) continue;
+                Map<String, String> map = new HashMap<>();
+                map.put("role", m.getRole());
+                map.put("content", m.getContent());
+                history.add(map);
+            }
+
+            String documentText = session.getDocument() != null ? session.getDocument().getExtractedText() : null;
+
+            String pageContext = request.getPageContext();
+    
+
+            String answer = aiService.generateStructuredChatResponse(
+                history,
+                documentText,
+                request.getMessage(),
+                request.getLanguage(),
+                pageContext,
+                request.getResponseStyle()
+            );
+
+            if (("New Conversation".equals(session.getTitle()) || session.getTitle() == null) && history.isEmpty()) {
+                String title = request.getMessage().length() > 30 ? request.getMessage().substring(0, 30) + "..." : request.getMessage();
+                session.setTitle(title);
+                chatSessionRepository.save(session);
+            }
+
+            ChatMessage aiMsg = new ChatMessage();
+            aiMsg.setSession(session);
+            aiMsg.setRole("AI");
+            aiMsg.setContent(answer);
+            chatMessageRepository.save(aiMsg);
+
+            response.setSuccess(true);
+            response.setConversationId(session.getConversationId());
+            response.setAnswer(answer);
+            response.setLanguage(request.getLanguage());
+            response.setSourceType(session.getDocument() != null ? "DOCUMENT" : "GENERAL");
+            response.setDocumentId(session.getDocument() != null ? session.getDocument().getId() : null);
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setSuccess(false);
+            response.setTimestamp(java.time.LocalDateTime.now().toString());
+            if (e.getMessage() != null && e.getMessage().contains("AI_PROVIDER_UNAVAILABLE")) {
+                response.setCode("AI_PROVIDER_UNAVAILABLE");
+                response.setMessage("The AI service is temporarily unavailable.");
+                return ResponseEntity.status(500).body(response);
+            }
+            java.io.StringWriter sw = new java.io.StringWriter();
+            e.printStackTrace(new java.io.PrintWriter(sw));
+            response.setCode("INTERNAL_SERVER_ERROR");
+            response.setMessage("The assistant service encountered an error. Details: " + sw.toString());
+            return ResponseEntity.status(500).body(response);
+        }
     }
 }

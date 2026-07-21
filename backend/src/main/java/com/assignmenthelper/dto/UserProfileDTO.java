@@ -30,6 +30,7 @@ public class UserProfileDTO {
     private String profileImageUrl;
     private Integer profileCompletion;
 
+
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -79,4 +80,6 @@ public class UserProfileDTO {
     public void setProfileImageUrl(String profileImageUrl) { this.profileImageUrl = profileImageUrl; }
     public Integer getProfileCompletion() { return profileCompletion; }
     public void setProfileCompletion(Integer profileCompletion) { this.profileCompletion = profileCompletion; }
+
+
 }

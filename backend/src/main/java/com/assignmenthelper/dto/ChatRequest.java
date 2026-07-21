@@ -10,6 +10,14 @@ public class ChatRequest {
     private String conversationId;
     private String pageContext;
     private String generationType;
+    private String responseStyle;
+    private Long projectPlanId;
+
+    public Long getProjectPlanId() { return projectPlanId; }
+    public void setProjectPlanId(Long projectPlanId) { this.projectPlanId = projectPlanId; }
+
+    public String getResponseStyle() { return responseStyle; }
+    public void setResponseStyle(String responseStyle) { this.responseStyle = responseStyle; }
 
     public String getConversationId() { return conversationId; }
     public void setConversationId(String conversationId) { this.conversationId = conversationId; }

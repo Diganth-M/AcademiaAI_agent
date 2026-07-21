@@ -25,7 +25,7 @@ const Register = () => {
       <div className="glass-card animate-fade-in" style={{ width: '100%', maxWidth: '400px' }}>
         <div className="text-center mb-4">
           <h2 style={{ color: 'var(--accent-primary)' }}>Create Account</h2>
-          <p>Join the Assignment Helper</p>
+          <p>Join the AcademiaAI agent</p>
         </div>
         
         {error && <div style={{ color: 'var(--danger)', marginBottom: '1rem', textAlign: 'center' }}>{error}</div>}

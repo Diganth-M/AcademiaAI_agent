@@ -20,6 +20,7 @@ public class ProfileUpdateRequest {
     private String preferredLanguage;
     private String bio;
 
+
     // Getters and Setters
     public String getFullName() { return fullName; }
     public void setFullName(String fullName) { this.fullName = fullName; }
@@ -53,4 +54,6 @@ public class ProfileUpdateRequest {
     public void setPreferredLanguage(String preferredLanguage) { this.preferredLanguage = preferredLanguage; }
     public String getBio() { return bio; }
     public void setBio(String bio) { this.bio = bio; }
+
+
 }

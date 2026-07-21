@@ -4,9 +4,12 @@ import './InteractiveQuiz.css';
 
 const parseQuizData = (rawText) => {
   try {
-    const jsonMatch = rawText.match(/\[\s*\{[\s\S]*\}\s*\]/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+    // Find the first '[' and last ']' to extract the JSON array even if there is surrounding text
+    const startIndex = rawText.indexOf('[');
+    const endIndex = rawText.lastIndexOf(']');
+    if (startIndex !== -1 && endIndex !== -1 && startIndex < endIndex) {
+      const jsonStr = rawText.substring(startIndex, endIndex + 1);
+      return JSON.parse(jsonStr);
     }
     return JSON.parse(rawText);
   } catch (err) {
@@ -15,7 +18,7 @@ const parseQuizData = (rawText) => {
   }
 };
 
-const InteractiveQuiz = ({ data }) => {
+const InteractiveQuiz = ({ data, onReset }) => {
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({}); // { questionIndex: { selected: opt, isCorrect: boolean } }
 
@@ -42,6 +45,7 @@ const InteractiveQuiz = ({ data }) => {
 
   const handleRetake = () => {
     setAnswers({});
+    if (onReset) onReset();
   };
 
   if (questions === null) {

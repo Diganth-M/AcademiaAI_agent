@@ -1,4 +1,4 @@
-# Assignment Helper Agent - Full Stack Project 🚀
+# AcademiaAI agent - Full Stack Project 🚀
 
 A complete, full-stack web application designed to help students learn better. By uploading their class notes or PDFs, students can utilize AI to automatically extract text, explain chapters, generate assignments, create MCQs, and prepare for vivas.
 
@@ -7,7 +7,7 @@ A complete, full-stack web application designed to help students learn better. B
 ## 📂 Complete Folder Structure
 
 ```text
-Assignment Helper Agent/
+AcademiaAI agent/
 │
 ├── assignment-helper-backend/          # Java Spring Boot Backend
 │   ├── src/main/java/com/assignmenthelper/

@@ -17,6 +17,8 @@ import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import ChatbotPanel from './components/chatbot/ChatbotPanel';
 
+
+
 import bgDashboard from './assets/bg_dashboard.png';
 import bgDocument from './assets/bg_document.png';
 import bgProfile from './assets/bg_profile.png';
@@ -87,7 +89,9 @@ function App() {
                 <Route path="/profile" element={<ProtectedRoute><Layout><Profile /></Layout></ProtectedRoute>} />
                 <Route path="/document/:id" element={<ProtectedRoute><Layout><DocumentView /></Layout></ProtectedRoute>} />
                 <Route path="/document/:id/generate" element={<ProtectedRoute><Layout><DocumentView /></Layout></ProtectedRoute>} />
+
                 <Route path="/history" element={<ProtectedRoute><Layout><History /></Layout></ProtectedRoute>} />
+
               </Routes>
             </ErrorBoundary>
           </Router>

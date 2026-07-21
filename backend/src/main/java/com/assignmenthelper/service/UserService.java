@@ -14,8 +14,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class UserService {
 
     @Autowired
@@ -29,6 +31,13 @@ public class UserService {
 
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
+    }
+
+    public User getUserFromToken(String token) {
+        org.springframework.security.core.userdetails.UserDetails userDetails = 
+            (org.springframework.security.core.userdetails.UserDetails) org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userRepository.findByUsername(userDetails.getUsername())
+            .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     public UserProfileDTO getUserProfile(Long userId) {
@@ -55,6 +64,7 @@ public class UserService {
         if (profile == null) {
             profile = new UserProfile();
             profile.setUser(user);
+            user.setUserProfile(profile);
         }
         
         profile.setFullName(request.getFullName());
@@ -73,7 +83,7 @@ public class UserService {
         profile.setSemester(request.getSemester());
         profile.setPreferredLanguage(request.getPreferredLanguage());
         profile.setBio(request.getBio());
-        
+
         userProfileRepository.save(profile);
         
         return mapToDTO(user, profile);
@@ -161,6 +171,7 @@ public class UserService {
             dto.setPreferredLanguage(profile.getPreferredLanguage());
             dto.setBio(profile.getBio());
             dto.setProfileImageUrl(profile.getProfileImageUrl());
+
             
             // Calculate completion percentage
             dto.setProfileCompletion(calculateCompletion(profile));

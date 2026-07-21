@@ -8,7 +8,7 @@ import AcademicInformationForm from '../components/profile/AcademicInformationFo
 import AccountInformationCard from '../components/profile/AccountInformationCard';
 import ChangePasswordForm from '../components/profile/ChangePasswordForm';
 import ProfileCompletionCard from '../components/profile/ProfileCompletionCard';
-import PreferencesSection from '../components/profile/PreferencesSection';
+
 import ConfirmChangesModal from '../components/profile/ConfirmChangesModal';
 
 const ProfileSkeleton = () => (
@@ -110,7 +110,12 @@ const Profile = () => {
     setSuccessMsg('');
     
     try {
-      const response = await updateProfile(formData);
+      const dataToSubmit = { ...formData };
+      if (dataToSubmit.dateOfBirth === '') {
+        dataToSubmit.dateOfBirth = null;
+      }
+      
+      const response = await updateProfile(dataToSubmit);
       updateProfileData(response.data);
       setIsEditing(false);
       setSuccessMsg('Profile updated successfully.');
@@ -222,7 +227,7 @@ const Profile = () => {
           )}
           
           <ChangePasswordForm />
-          <PreferencesSection />
+
         </div>
       </div>
       

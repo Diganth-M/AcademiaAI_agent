@@ -72,7 +72,7 @@ const Login = () => {
     }}>
       <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
         <h1 style={{ color: '#fff', fontSize: '2.5rem', fontWeight: '300', letterSpacing: '2px', textTransform: 'uppercase' }}>
-          Assignment Helper
+          AcademiaAI agent
         </h1>
       </div>
 
@@ -87,7 +87,7 @@ const Login = () => {
       }}>
         
         <div style={{ marginBottom: '2rem' }}>
-          <img src="/src/assets/hero.png" alt="Assignment Helper Logo" style={{ width: '80px', height: 'auto', objectFit: 'contain' }} />
+          <img src="/src/assets/hero.png" alt="AcademiaAI agent Logo" style={{ width: '80px', height: 'auto', objectFit: 'contain' }} />
         </div>
 
         {error && <div style={{ color: '#ff4d4d', marginBottom: '1rem', backgroundColor: 'rgba(255, 77, 77, 0.1)', padding: '0.5rem', borderRadius: '4px' }}>{error}</div>}
@@ -193,7 +193,7 @@ const Login = () => {
       </div>
       
       <div style={{ marginTop: '2rem', color: '#ccc', fontSize: '0.85rem' }}>
-        &copy; 2026 Assignment Helper . All rights reserved
+        &copy; 2026 AcademiaAI agent . All rights reserved
       </div>
     </div>
   );

@@ -18,7 +18,7 @@ const DocumentView = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [generating, setGenerating] = useState(false);
-  const [activeTab, setActiveTab] = useState('explanation'); // explanation, assignment, mcq, viva
+  const [activeTab, setActiveTab] = useState('explanation'); // explanation, assignment, mcq, viva, project-planner
   const [additionalPrompt, setAdditionalPrompt] = useState('');
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -135,7 +135,8 @@ const DocumentView = () => {
     try {
       let finalPrompt = additionalPrompt;
       if (type === 'mcq') {
-        const jsonInstruction = " Respond ONLY with a valid JSON array where each object has: question, options (array of exactly 4 strings), correctAnswer (string, exactly matching one option), explanation (string). Do not wrap in markdown blocks, just raw JSON.";
+        const randomSeed = Math.floor(Math.random() * 1000000);
+        const jsonInstruction = ` Respond ONLY with a valid JSON array where each object has: question, options (array of exactly 4 strings), correctAnswer (string, exactly matching one option), explanation (string). Do not wrap in markdown blocks, just raw JSON. IMPORTANT: Generate completely NEW and DIFFERENT questions from any previous attempts. Use this random seed for uniqueness: ${randomSeed}.`;
         finalPrompt = finalPrompt ? finalPrompt + "\n\n" + jsonInstruction : jsonInstruction;
       }
       
@@ -160,7 +161,8 @@ const DocumentView = () => {
       setIsFullScreen(true);
       
     } catch (err) {
-      alert('Generation failed');
+      const errorMsg = err.response?.data || err.message || 'Unknown error occurred';
+      alert(`Generation failed: ${typeof errorMsg === 'string' ? errorMsg : JSON.stringify(errorMsg)}`);
     } finally {
       setGenerating(false);
     }
@@ -303,6 +305,23 @@ const DocumentView = () => {
         </button>
       </div>
       
+
+
+      {activeTab === 'project-planner' && (
+        <div style={{ textAlign: 'center', padding: '4rem 2rem', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
+          <h3 style={{ color: '#fff', marginBottom: '1rem' }}>Project Architect</h3>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', maxWidth: '500px', margin: '0 auto 2rem' }}>
+            Generate a full architectural plan, tech stack, database schema, and API endpoints for a project based on this document's concepts.
+          </p>
+          <button 
+            className="btn btn-primary" 
+            onClick={() => window.location.href = `/project-planner?documentId=${id}`}
+          >
+            Open Project Planner
+          </button>
+        </div>
+      )}
+
       {activeTab === 'assignment' && (
         <div className="form-group">
           <label className="form-label">Questions (Optional)</label>
@@ -316,134 +335,138 @@ const DocumentView = () => {
         </div>
       )}
       
-      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '2rem' }}>
-        <button 
-          className="btn btn-primary" 
-          style={{ width: 'fit-content' }}
-          onClick={() => handleGenerate(activeTab)}
-          disabled={generating}
-        >
-          {generating ? 'Generating...' : `Generate ${activeTab}`}
-        </button>
-        
-        <select 
-          value={generationLanguage} 
-          onChange={(e) => handleLanguageChange(e.target.value)}
-          disabled={translating || generating}
-          className="form-control"
-          style={{ width: 'auto', padding: '8px 12px' }}
-        >
-          <option value="English">English</option>
-          <option value="Tamil">தமிழ் (Tamil)</option>
-          <option value="Malayalam">മലയാളം (Malayalam)</option>
-          <option value="Kannada">ಕನ್ನಡ (Kannada)</option>
-          <option value="Telugu">తెలుగు (Telugu)</option>
-        </select>
-        {translating && <span style={{ color: 'var(--accent-primary)', fontSize: '0.9rem', marginLeft: '10px' }}>Translating...</span>}
-      </div>
+      {['explanation', 'assignment', 'mcq', 'viva'].includes(activeTab) && (
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '2rem' }}>
+          <button 
+            className="btn btn-primary" 
+            style={{ width: 'fit-content' }}
+            onClick={() => handleGenerate(activeTab)}
+            disabled={generating}
+          >
+            {generating ? 'Generating...' : `Generate ${activeTab}`}
+          </button>
+          
+          <select 
+            value={generationLanguage} 
+            onChange={(e) => handleLanguageChange(e.target.value)}
+            disabled={translating || generating}
+            className="form-control"
+            style={{ width: 'auto', padding: '8px 12px' }}
+          >
+            <option value="English">English</option>
+            <option value="Tamil">தமிழ் (Tamil)</option>
+            <option value="Malayalam">മലയാളം (Malayalam)</option>
+            <option value="Kannada">ಕನ್ನಡ (Kannada)</option>
+            <option value="Telugu">తెలుగు (Telugu)</option>
+          </select>
+          {translating && <span style={{ color: 'var(--accent-primary)', fontSize: '0.9rem', marginLeft: '10px' }}>Translating...</span>}
+        </div>
+      )}
       
-      <div style={{ flex: 1, overflowY: 'auto' }} onMouseUp={handleMouseUp}>
-        {currentTypeHistory.length > 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {currentTypeHistory.map((item, idx) => (
-              <div key={idx} style={{ 
-                background: 'rgba(0,0,0,0.2)', 
-                padding: '1.5rem', 
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--glass-border)'
-              }}>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-                  Generated on {new Date(item.createdAt).toLocaleString()}
-                </div>
-                {item.prompt && <div style={{ marginBottom: '1rem', fontStyle: 'italic' }}>Q: {item.prompt}</div>}
-                <div className="chat-bubble ai-message" style={{ background: 'transparent', border: 'none', padding: 0 }}>
-                  {activeTab === 'mcq' ? (
-                    <InteractiveQuiz data={item.output} />
-                  ) : (
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      components={{
-                        code({node, inline, className, children, ...props}) {
-                          const match = /language-(\w+)/.exec(className || '');
-                          return !inline && match ? (
-                            <SyntaxHighlighter
-                              {...props}
-                              children={String(children).replace(/\n$/, '')}
-                              style={vs2015}
-                              language={match[1]}
-                              PreTag="div"
-                            />
-                          ) : (
-                            <code className={className} {...props}>
-                              {children}
-                            </code>
-                          )
-                        }
-                      }}
-                    >
-                      {item.output}
-                    </ReactMarkdown>
-                  )}
-                </div>
-                
-                {/* Interactive Lesson Follow-ups */}
-                <div style={{ marginTop: '1.5rem', borderTop: '1px solid var(--glass-border)', paddingTop: '1rem' }}>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.8rem', fontWeight: '500' }}>
-                    Continue Learning:
+      {['explanation', 'assignment', 'mcq', 'viva'].includes(activeTab) && (
+        <div style={{ flex: 1, overflowY: 'auto' }} onMouseUp={handleMouseUp}>
+          {currentTypeHistory.length > 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              {currentTypeHistory.map((item, idx) => (
+                <div key={idx} style={{ 
+                  background: 'rgba(0,0,0,0.2)', 
+                  padding: '1.5rem', 
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--glass-border)'
+                }}>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+                    Generated on {new Date(item.createdAt).toLocaleString()}
                   </div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                    {[
-                      "Ask another question",
-                      "Give easier explanation",
-                      "Give harder explanation",
-                      "Show real-life example",
-                      "Show interview question",
-                      "Generate quiz",
-                      "Test my knowledge",
-                      "Generate flashcards",
-                      "Explain with analogy",
-                      "Show diagram",
-                      "Translate to simple English"
-                    ].map((opt, i) => (
-                      <button 
-                        key={i} 
-                        onClick={() => {
-                          openChat();
-                          // Optional: prefill input if we had a way, but since it's global we can just open it
-                        }}
-                        style={{
-                          background: 'rgba(255,255,255,0.05)',
-                          border: '1px solid rgba(255,255,255,0.1)',
-                          padding: '6px 12px',
-                          borderRadius: '16px',
-                          color: 'var(--text-primary)',
-                          fontSize: '0.85rem',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s'
-                        }}
-                        onMouseOver={(e) => {
-                          e.target.style.background = 'var(--accent-primary)';
-                          e.target.style.borderColor = 'var(--accent-primary)';
-                        }}
-                        onMouseOut={(e) => {
-                          e.target.style.background = 'rgba(255,255,255,0.05)';
-                          e.target.style.borderColor = 'rgba(255,255,255,0.1)';
+                  {item.prompt && <div style={{ marginBottom: '1rem', fontStyle: 'italic' }}>Q: {item.prompt}</div>}
+                  <div className="chat-bubble ai-message" style={{ background: 'transparent', border: 'none', padding: 0 }}>
+                    {activeTab === 'mcq' ? (
+                      <InteractiveQuiz data={item.output} onReset={() => handleGenerate('mcq')} />
+                    ) : (
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          code({node, inline, className, children, ...props}) {
+                            const match = /language-(\w+)/.exec(className || '');
+                            return !inline && match ? (
+                              <SyntaxHighlighter
+                                {...props}
+                                children={String(children).replace(/\n$/, '')}
+                                style={vs2015}
+                                language={match[1]}
+                                PreTag="div"
+                              />
+                            ) : (
+                              <code className={className} {...props}>
+                                {children}
+                              </code>
+                            )
+                          }
                         }}
                       >
-                        {opt}
-                      </button>
-                    ))}
+                        {item.output}
+                      </ReactMarkdown>
+                    )}
+                  </div>
+                  
+                  {/* Interactive Lesson Follow-ups */}
+                  <div style={{ marginTop: '1.5rem', borderTop: '1px solid var(--glass-border)', paddingTop: '1rem' }}>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.8rem', fontWeight: '500' }}>
+                      Continue Learning:
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                      {[
+                        "Ask another question",
+                        "Give easier explanation",
+                        "Give harder explanation",
+                        "Show real-life example",
+                        "Show interview question",
+                        "Generate quiz",
+                        "Test my knowledge",
+                        "Generate flashcards",
+                        "Explain with analogy",
+                        "Show diagram",
+                        "Translate to simple English"
+                      ].map((opt, i) => (
+                        <button 
+                          key={i} 
+                          onClick={() => {
+                            openChat();
+                            // Optional: prefill input if we had a way, but since it's global we can just open it
+                          }}
+                          style={{
+                            background: 'rgba(255,255,255,0.05)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            padding: '6px 12px',
+                            borderRadius: '16px',
+                            color: 'var(--text-primary)',
+                            fontSize: '0.85rem',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                          }}
+                          onMouseOver={(e) => {
+                            e.target.style.background = 'var(--accent-primary)';
+                            e.target.style.borderColor = 'var(--accent-primary)';
+                          }}
+                          onMouseOut={(e) => {
+                            e.target.style.background = 'rgba(255,255,255,0.05)';
+                            e.target.style.borderColor = 'rgba(255,255,255,0.1)';
+                          }}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center" style={{ color: 'var(--text-secondary)', padding: '3rem' }}>
-            No {activeTab} generated yet. Click generate above!
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center" style={{ color: 'var(--text-secondary)', padding: '3rem' }}>
+              No {activeTab} generated yet. Click generate above!
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 
@@ -480,7 +503,7 @@ const DocumentView = () => {
             </h3>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1.5rem', flex: 1 }}>
-              {['explanation', 'assignment', 'mcq', 'viva'].map(tab => (
+              {['explanation', 'assignment', 'mcq', 'viva', 'project-planner'].map(tab => (
                 <button
                   key={tab}
                   className={`btn ${activeTab === tab ? 'btn-primary' : 'btn-secondary'}`}

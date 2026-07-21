@@ -67,6 +67,8 @@ public class UserProfile {
     @Column(name = "profile_image_url")
     private String profileImageUrl;
 
+
+
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
@@ -133,6 +135,7 @@ public class UserProfile {
     public String getProfileImageUrl() { return profileImageUrl; }
     public void setProfileImageUrl(String profileImageUrl) { this.profileImageUrl = profileImageUrl; }
     
+
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

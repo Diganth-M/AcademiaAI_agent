@@ -34,16 +34,8 @@ export const AuthProvider = ({ children }) => {
     const isLocal = !!localStorage.getItem('token');
     const storage = isLocal ? localStorage : sessionStorage;
     
-    const existingUserData = JSON.parse(storage.getItem('user') || '{}');
-    const updatedUserData = {
-      ...existingUserData,
-      fullName: newData.fullName,
-      username: newData.username,
-      email: newData.email,
-      profileImageUrl: newData.profileImageUrl
-    };
-    
-    storage.setItem('user', JSON.stringify(updatedUserData));
+    // newData contains the full UserProfileDTO
+    storage.setItem('user', JSON.stringify(newData));
   };
 
   const login = async (username, password, keepLoggedIn = false) => {
@@ -61,21 +53,13 @@ export const AuthProvider = ({ children }) => {
       const profileResponse = await api.get('/users/profile');
       const profileData = profileResponse.data;
       
-      const userData = {
-        id,
-        username: actualUsername,
-        email,
-        fullName: profileData.fullName,
-        profileImageUrl: profileData.profileImageUrl
-      };
-      
       if (keepLoggedIn) {
-        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('user', JSON.stringify(profileData));
       } else {
-        sessionStorage.setItem('user', JSON.stringify(userData));
+        sessionStorage.setItem('user', JSON.stringify(profileData));
       }
       
-      setUser(userData);
+      setUser(profileData);
       return response.data;
     } catch (err) {
       console.error("Failed to fetch full profile after login", err);

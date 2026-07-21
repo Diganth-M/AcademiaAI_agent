@@ -12,7 +12,7 @@ const Navbar = () => {
     if (location.pathname === '/history') return 'History';
     if (location.pathname === '/profile') return 'Profile';
     if (location.pathname.startsWith('/document/')) return 'Document View';
-    return 'Agent Helper';
+    return 'AcademiaAI agent';
   };
 
   const displayName = 
